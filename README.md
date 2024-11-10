@@ -1,10 +1,24 @@
-# Fun Motion Detector
+# Motion Detection Project
 
-## Description
-This project uses the camera to detect motion by comparing consecutive video frames in real time. When significant motion is detected, a humorous alert message appears on the video feed.
+This project uses OpenCV to detect motion by comparing consecutive frames from the webcam feed.
 
-## Installation
-To manage dependencies and build, install [Poetry](https://python-poetry.org/). After installing Poetry, install the project's dependencies with:
+## Setup
+
+You need Python 3.7+ and `Poetry` to manage dependencies.
+
+1. Install Poetry (if not already installed):
+    ```bash
+    curl -sSL https://install.python-poetry.org | python3 -
+    ```
+
+2. Install dependencies using Poetry:
+    ```bash
+    poetry install
+    ```
+
+## Running the Project
+
+After installing the dependencies, you can run the motion detection script:
 
 ```bash
-poetry install
+poetry run python motion_detection.py
