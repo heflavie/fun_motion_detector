@@ -4,7 +4,7 @@ This project uses OpenCV to detect motion by comparing consecutive frames from t
 
 ## Setup
 
-You need Python 3.7+ and `Poetry` to manage dependencies.
+You need Python 3.11+ and `Poetry` to manage dependencies.
 
 1. Install Poetry (if not already installed):
     ```bash
