@@ -75,3 +75,6 @@ def detect_motion():
     cap.release()
     cv2.destroyAllWindows()
     logging.info("Camera released and windows closed")
+
+
+detect_motion()
