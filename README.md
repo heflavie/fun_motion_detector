@@ -75,3 +75,7 @@ To run the unit tests for the motion detection system, use the following command
 python -m unittest tests/test_motion_detection.py
 
 
+
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

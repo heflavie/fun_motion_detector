@@ -1,4 +1,10 @@
-# motion_detector.py
+"""
+motion_detector.py
+
+This module implements a simple motion detection system using OpenCV. 
+The system captures frames from the camera, detects motion based on frame differences, 
+and displays the processed video feed with bounding boxes around moving objects.
+"""
 
 import cv2
 import logging
@@ -8,6 +14,18 @@ import numpy as np
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def detect_motion():
+    
+    """
+    Captures video from the camera and detects motion by comparing consecutive frames.
+
+    The function uses frame differencing to highlight areas with significant motion 
+    and displays the processed video feed with bounding boxes. It also logs events, 
+    such as initialization, errors, and motion detection.
+
+    Raises:
+        SystemExit: If the camera fails to initialize.
+    """
+    
     # Initialize the camera
     cap = cv2.VideoCapture(0)
 
