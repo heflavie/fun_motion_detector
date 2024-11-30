@@ -16,9 +16,9 @@ flake8 = "^7.1.1"
 pre-commit = "^3.5.3"
 
 [tool.flake8]
-max-line-length = 88  # Allow slightly longer lines for better readability
-exclude = .venv,build,dist  # Exclude virtual environments and build folders
-ignore = E203, E501, W503  # Ignore some common issues for readability and compatibility
+max-line-length = 120  # Allow slightly longer lines for better readability
+exclude = ['.venv', 'build', 'dist']  # Exclude virtual environments and build folders
+ignore = ['E203', 'E501', 'W503']  # Ignore some common issues for readability and compatibility
 show-source = true  # Display the problematic line with the error
 statistics = true  # Show summary statistics of errors
 
