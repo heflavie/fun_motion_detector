@@ -26,3 +26,14 @@ Use this command :
 ```bash
 poetry run flake8
 ```
+
+
+## Automating Code Analysis with Pre-commit Hooks
+This project uses [pre-commit](https://pre-commit.com/) to automate code quality checks before committing changes.  
+
+### Installation
+Pre-commit is included in the development dependencies. To install and activate the hooks, run:
+```bash
+poetry install
+poetry run pre-commit install
+```
