@@ -51,3 +51,18 @@ Pre-commit is included in the development dependencies. To install and activate 
 poetry install
 poetry run pre-commit install
 ```
+
+
+
+## Logging Configuration
+This project uses Python's built-in logging module to track important events during execution. Logs provide valuable information for debugging and monitoring the behavior of the motion detection system.
+
+### Log Levels
+- **DEBUG**: Logs detailed internal states, such as the calculated frame differences. These logs are useful for debugging and understanding how the system processes video frames.
+- **INFO**: Regular information on the state of the program (e.g., initialization, motion detection events, system shutdown).
+- **WARNING**: A warning when no significant motion is detected in a frame, indicating that the system is not detecting relevant changes.
+- **ERROR**: Indicates errors such as failure to open the camera or capture frames.
+
+### Viewing Logs
+Logs will be printed to the console by default. You can configure logging to write to a file by modifying the `logging.basicConfig` in the code. Ensure that your IDE or terminal is configured to display log messages for debugging.
+
