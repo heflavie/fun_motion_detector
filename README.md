@@ -8,3 +8,21 @@ To manage dependencies and build, install [Poetry](https://python-poetry.org/). 
 
 ```bash
 poetry install
+```
+
+### Additional features to debug, log, test, profile, analyze your software
+
+## Static Code Analysis with Flake8
+To ensure code quality, this project uses [Flake8](https://flake8.pycqa.org/) for static code analysis.  
+
+### Installation
+Flake8 is already included in the project's dependencies. You can install it by running:
+```bash
+poetry install
+```
+
+### To run analysis
+Use this command :
+```bash
+poetry run flake8
+```
