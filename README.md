@@ -66,3 +66,12 @@ This project uses Python's built-in logging module to track important events dur
 ### Viewing Logs
 Logs will be printed to the console by default. You can configure logging to write to a file by modifying the `logging.basicConfig` in the code. Ensure that your IDE or terminal is configured to display log messages for debugging.
 
+
+## Running Tests
+
+To run the unit tests for the motion detection system, use the following command:
+
+```bash
+python -m unittest tests/test_motion_detection.py
+
+
