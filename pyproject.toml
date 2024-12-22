@@ -6,7 +6,7 @@ authors = ["heflavie <niniehebral@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10"
 numpy = "^2.1.3"
 opencv-python = "^4.10.0.84"
 
