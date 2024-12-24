@@ -97,8 +97,9 @@ jobs:
         fi
 
         # Génération du changelog avec git-changelog
-        git-changelog --start=$last_tag --end=HEAD > CHANGELOG.md
+        git-changelog -F "$last_tag..HEAD" > CHANGELOG.md
         cat CHANGELOG.md
+
 
     - name: Upload release artifacts
       run: |
