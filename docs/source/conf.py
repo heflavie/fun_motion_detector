@@ -1,54 +1,48 @@
-# Configuration file for the Sphinx documentation builder.
-#
-# This file only contains a selection of the most common options. For a full
-# list see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
-
 # -- Path setup --------------------------------------------------------------
-
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-#
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
-
+import os
+import sys
+sys.path.insert(0, os.path.abspath('../'))  # Ajoute le dossier racine de votre projet
 
 # -- Project information -----------------------------------------------------
-
 project = 'Fun Motion Detector'
 copyright = '2024, Flavie Hebral'
 author = 'Flavie Hebral'
-
-# The full version, including alpha/beta/rc tags
 release = '0.1.0'
 
-
 # -- General configuration ---------------------------------------------------
+extensions = [
+    'sphinx.ext.autodoc',  # Pour générer la documentation automatique
+    'sphinx.ext.napoleon',  # Pour supporter les docstrings au format Google ou NumPy
+]
 
-# Add any Sphinx extension module names here, as strings. They can be
-# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
-# ones.
-extensions = ['sphinx.ext.autodoc']
-
-# Add any paths that contain templates here, relative to this directory.
+# Liste des chemins pour les templates, s'il y en a
 templates_path = ['_templates']
 
-# List of patterns, relative to source directory, that match files and
-# directories to ignore when looking for source files.
-# This pattern also affects html_static_path and html_extra_path.
+# Liste des fichiers et dossiers à ignorer
 exclude_patterns = []
 
-
 # -- Options for HTML output -------------------------------------------------
-
-# The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
-#
 html_theme = 'alabaster'
 
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
+# Si vous avez des fichiers statiques comme des CSS ou des images
 html_static_path = ['_static']
+
+# -- Autodoc configuration --------------------------------------------------
+# Ajoutez motion_detector.py et test_motion_detection.py dans le chemin d'importation
+autodoc_mock_imports = []  # Si vous avez des dépendances manquantes, vous pouvez les ajouter ici
+
+# -- Documentation à générer -------------------------------------------------
+# C'est ici que vous allez mentionner les fichiers sources comme index.rst
+# Vous pouvez maintenant ajouter les modules et leurs docstrings via Sphinx
+
+# Documentation à partir de fichiers Python
+autodoc_default_options = {
+    'members': True,  # Inclut les membres (fonctions, classes) dans la documentation
+    'undoc-members': True,  # Inclut les membres non documentés
+    'show-inheritance': True,  # Affiche les héritages dans les classes
+}
+
+# -- Paths to the Python modules ------------------------------------------
+# Si votre fichier motion_detector.py est dans le dossier racine, vous avez déjà fait la bonne chose avec sys.path.insert
+# Si vous avez des fichiers Python dans un sous-dossier, ajustez le chemin en conséquence.
+
