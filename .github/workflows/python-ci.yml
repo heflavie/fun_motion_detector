@@ -75,12 +75,29 @@ jobs:
       run: |
         pip install git-changelog
 
+    - name: Verify git-changelog installation
+      run: |
+        pip show git-changelog
+
+
     - name: Generate Changelog
       id: changelog
       run: |
         echo "Generating changelog..."
         git fetch --tags
-        git-changelog --tag $(git describe --tags --abbrev=0)^! > CHANGELOG.md
+
+        # Vérification des tags
+        git tag
+
+        # Récupérer le dernier tag
+        last_tag=$(git rev-list --tags --max-count=1 --skip=1)
+        if [ -z "$last_tag" ]; then  # Si aucun tag trouvé
+          echo "No previous tag found. Skipping changelog generation."
+          exit 0
+        fi
+
+        # Génération du changelog avec git-changelog
+        git-changelog --start=$last_tag --end=HEAD > CHANGELOG.md
         cat CHANGELOG.md
 
     - name: Upload release artifacts
