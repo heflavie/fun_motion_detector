@@ -1,9 +1,9 @@
-# -- Path setup 
+# -- Path setup
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../')) 
+sys.path.insert(0, os.path.abspath('../'))
 
-# -- Project information 
+# -- Project information
 project = 'Fun Motion Detector'
 copyright = '2024, Flavie Hebral'
 author = 'Flavie Hebral'
@@ -30,16 +30,15 @@ html_theme = 'alabaster'
 # Si vous avez des fichiers statiques comme des CSS ou des images
 html_static_path = ['_static']
 
-# -- Autodoc configuration 
-autodoc_mock_imports = [] 
+# -- Autodoc configuration
+autodoc_mock_imports = []
 
 # -- Documentation à générer
 
 # Documentation à partir de fichiers Python
 autodoc_default_options = {
-    'members': True,  # Inclut les membres (fonctions, classes) dans la documentation
+    # Inclut les membres (fonctions, classes) dans la documentation
+    'members': True,
     'undoc-members': True,  # Inclut les membres non documentés
     'show-inheritance': True,  # Affiche les héritages dans les classes
 }
-
-
