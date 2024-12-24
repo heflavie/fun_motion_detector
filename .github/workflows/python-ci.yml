@@ -79,6 +79,18 @@ jobs:
       run: |
         pip show git-changelog
 
+    - name: Check if GitHub token is available
+      run: |
+        echo "Checking if GITHUB_TOKEN is available..."
+        gh auth status
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Check GitHub API access with GITHUB_TOKEN
+      run: |
+        echo "Checking GitHub API access..."
+        curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/user
+
 
     - name: Generate Changelog
       id: changelog
