@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.10.0, 3.11.9]  
+        python-version: [3.11.4, 3.12.1]  
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -23,15 +23,26 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libgl1-mesa-glx libglib2.0-0
+
     - name: Install Poetry
       run: |
-        python -m pip install --upgrade pip
-        pip install poetry
+        curl -sSL https://install.python-poetry.org | python3 -
+
 
     - name: Install dependencies using Poetry
       run: |
-        poetry install
+        poetry install --no-root -v
+        poetry run pip list
+    
+    - name: Vérifier l'import des packages
+      run: |
+        poetry run python -c "import numpy; import cv2; print('Packages importés avec succès')"
+
 
     - name: Run unit tests
       run: |
-        python -m unittest discover -s tests -p "test_*.py"
+        poetry run python -m unittest discover -s tests -p "test_*.py"
