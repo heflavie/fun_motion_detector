@@ -1,4 +1,4 @@
-name: Python CI
+name: Python CI and Release
 
 on:
   push:
@@ -7,6 +7,9 @@ on:
   pull_request:
     branches:
       - main
+  create:
+    tags:
+      - '*'
 
 jobs:
   test:
@@ -33,7 +36,6 @@ jobs:
       run: |
         curl -sSL https://install.python-poetry.org | python3 -
 
-
     - name: Install dependencies using Poetry
       run: |
         poetry install --no-root -v
@@ -43,11 +45,9 @@ jobs:
       run: |
         poetry run python -c "import numpy; import cv2; print('Packages importés avec succès')"
 
-
     - name: Run unit tests
       run: |
         poetry run python -m unittest discover -s tests -p "test_*.py"
-
 
     - name: Run Flake8 for code style and smells
       run: poetry run flake8 .
@@ -57,3 +57,37 @@ jobs:
 
     - name: Run git-secrets to check for secrets
       run: git secrets --scan
+
+  release:
+    runs-on: ubuntu-latest
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/')  # Only run on tags
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+
+    - name: Generate Changelog
+      id: changelog
+      run: |
+        echo "Generating changelog..."
+        git fetch --tags
+        git-changelog --tag $(git describe --tags --abbrev=0)^! > CHANGELOG.md
+        cat CHANGELOG.md
+
+    - name: Upload release artifacts
+      run: |
+        mkdir artifacts
+        cp CHANGELOG.md artifacts/
+        # Ajouter d'autres artefacts si nécessaire (rapports de tests, builds, etc.)
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: artifacts/*
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
