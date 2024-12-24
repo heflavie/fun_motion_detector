@@ -1,98 +1,155 @@
-"""
-motion_detector.py
-
-This module implements a simple motion detection system using OpenCV. 
-The system captures frames from the camera, detects motion based on frame differences, 
-and displays the processed video feed with bounding boxes around moving objects.
-"""
-
 import cv2
 import logging
-import numpy as np
+import os
+import time
 
 # Setup logging configuration
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def detect_motion():
-    
+class CameraError(Exception):
+    """Custom exception for camera errors."""
+    pass
+
+def initialize_camera(video_path=None):
     """
-    Captures video from the camera and detects motion by comparing consecutive frames.
+    Initialize the camera or video file for motion detection.
 
-    The function uses frame differencing to highlight areas with significant motion 
-    and displays the processed video feed with bounding boxes. It also logs events, 
-    such as initialization, errors, and motion detection.
-
+    Args:
+        video_path (str): Path to a video file, or None to use the camera.
+    
+    Returns:
+        cv2.VideoCapture: Video capture object.
+    
     Raises:
-        SystemExit: If the camera fails to initialize.
+        CameraError: If the camera or video file cannot be opened.
     """
+    cap = cv2.VideoCapture(video_path if video_path else 0)
+
+    if not cap.isOpened():
+        logging.error("Failed to open the video source")
+        raise CameraError("Camera or video file could not be opened")
     
-    # Initialize the camera
-    cap = cv2.VideoCapture(0)
+    return cap
 
-    # Capture the first frame
-    ret, previous_frame = cap.read()
+def capture_frame(cap):
+    """
+    Captures a frame from the video source.
+    
+    Args:
+        cap (cv2.VideoCapture): Video capture object.
 
+    Returns:
+        tuple: (bool, ndarray) - ret: success flag, frame: captured frame.
+    """
+    ret, frame = cap.read()
+    if not ret or frame is None:
+        logging.error("Failed to capture frame")
+        return False, None
+    return ret, frame
+
+
+def detect_motion_in_frame(previous_gray, current_frame):
+    """
+    Detect motion by comparing the previous and current frames.
+
+    Args:
+        previous_gray (ndarray): Grayscale version of the previous frame.
+        current_frame (ndarray): Current frame from the video source.
+
+    Returns:
+        motion_detected (bool): Whether motion was detected.
+        frame_diff_bgr (ndarray): Frame with motion highlighted.
+    """
+    current_gray = cv2.cvtColor(current_frame, cv2.COLOR_BGR2GRAY)
+    frame_diff = cv2.absdiff(current_gray, previous_gray)
+    
+    _, threshold = cv2.threshold(frame_diff, 30, 255, cv2.THRESH_BINARY)
+    contours, _ = cv2.findContours(threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    motion_detected = False
+    frame_diff_bgr = cv2.cvtColor(frame_diff, cv2.COLOR_GRAY2BGR)
+    
+    for contour in contours:
+        if cv2.contourArea(contour) > 500:
+            (x, y, w, h) = cv2.boundingRect(contour)
+            cv2.rectangle(frame_diff_bgr, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            cv2.putText(frame_diff_bgr, "Motion detected!", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+            motion_detected = True
+
+    return motion_detected, frame_diff_bgr
+
+def display_frame(frame_diff_bgr):
+    """
+    Display the frame with motion detection highlights.
+    
+    Args:
+        frame_diff_bgr (ndarray): Frame with motion highlights.
+    """
+    try:
+        cv2.imshow("Frame Difference with Motion Detection", frame_diff_bgr)
+    except cv2.error as e:
+        logging.error(f"Error displaying frame: {e}")
+
+def release_camera(cap):
+    """
+    Release the camera and close any open windows.
+    
+    Args:
+        cap (cv2.VideoCapture): Video capture object.
+    """
+    cap.release()
+    try:
+        cv2.destroyAllWindows()
+    except cv2.error as e:
+        logging.error(f"Error closing windows: {e}")
+    logging.info("Camera released and windows closed")
+
+def detect_motion(video_path=None):
+    """
+    Main function for motion detection.
+    
+    Args:
+        video_path (str): Optional path to a video file. If not provided, the camera will be used.
+    """
+    cap = initialize_camera(video_path)
+
+    ret, previous_frame = capture_frame(cap)
     if not ret:
-        logging.error("Failed to capture the first frame")
-        exit()
+        raise CameraError("No valid frame captured")
+    
+    previous_gray = cv2.cvtColor(previous_frame, cv2.COLOR_BGR2GRAY)
+    
+    no_display = os.getenv("NO_DISPLAY", "0") == "1"
+    logging.info(f"Display is disabled: {no_display}")
 
     logging.info("Motion detection system initialized. Starting motion detection loop.")
-    
+
+    start_time = time.time()
+
     while True:
-        # Capture the current frame
-        ret, current_frame = cap.read()
+        ret, current_frame = capture_frame(cap)
         if not ret:
-            logging.error("Failed to capture frame")
             break
 
-        # Convert frames to grayscale for processing
-        previous_gray = cv2.cvtColor(previous_frame, cv2.COLOR_BGR2GRAY)
-        current_gray = cv2.cvtColor(current_frame, cv2.COLOR_BGR2GRAY)
-
-        # Calculate the absolute difference between the current and previous frames
-        frame_diff = cv2.absdiff(current_gray, previous_gray)
-
-        # Apply threshold to highlight the areas with significant movement
-        _, threshold = cv2.threshold(frame_diff, 30, 255, cv2.THRESH_BINARY)
-
-        # Convert frame_diff to BGR to draw colored rectangles
-        frame_diff_bgr = cv2.cvtColor(frame_diff, cv2.COLOR_GRAY2BGR)
-        
-        # Log the frame difference values for debugging
-        logging.debug(f"Frame difference calculated: min={np.min(frame_diff)} max={np.max(frame_diff)}")
-
-        # Find contours in the threshold image
-        contours, _ = cv2.findContours(threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-        motion_detected = False  # Track if any motion is detected
-
-        # Draw a bounding box around significant contours on the difference frame
-        for contour in contours:
-            if cv2.contourArea(contour) > 500:  # Only consider large enough areas
-                (x, y, w, h) = cv2.boundingRect(contour)
-                cv2.rectangle(frame_diff_bgr, (x, y), (x + w, y + h), (0, 0, 255), 2)  # Red rectangle
-                cv2.putText(frame_diff_bgr, "Motion detected!", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
-                logging.info(f"Motion detected at position ({x}, {y}), size: {w}x{h}")
-                motion_detected = True
+        motion_detected, frame_diff_bgr = detect_motion_in_frame(previous_gray, current_frame)
 
         if not motion_detected:
             logging.warning("No significant motion detected in this frame.")
+        
+        if not no_display:
+            display_frame(frame_diff_bgr)
 
-        # Show the frame difference with rectangles
-        cv2.imshow('Frame Difference with Motion Detection', frame_diff_bgr)
+        if no_display and time.time() - start_time > 10:
+            logging.info("Exiting after 10 seconds in CI environment without display")
+            break
 
-        # Press 'q' to exit
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if not no_display and cv2.waitKey(1) & 0xFF == ord('q'):
             logging.info("Exiting motion detection loop")
             break
 
-        # Update the previous frame for the next iteration
-        previous_frame = current_frame
+        previous_gray = cv2.cvtColor(current_frame, cv2.COLOR_BGR2GRAY)
 
-    # Release camera and close windows
-    cap.release()
-    cv2.destroyAllWindows()
-    logging.info("Camera released and windows closed")
+    release_camera(cap)
 
-
-detect_motion()
+if __name__ == "__main__":
+    detect_motion()
