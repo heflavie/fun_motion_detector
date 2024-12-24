@@ -27,6 +27,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y libgl1-mesa-glx libglib2.0-0
+        sudo apt-get install -y git-secrets
 
     - name: Install Poetry
       run: |
@@ -46,3 +47,13 @@ jobs:
     - name: Run unit tests
       run: |
         poetry run python -m unittest discover -s tests -p "test_*.py"
+
+
+    - name: Run Flake8 for code style and smells
+      run: poetry run flake8 .
+
+    - name: Run Bandit for security checks
+      run: poetry run bandit -r .
+
+    - name: Run git-secrets to check for secrets
+      run: git secrets --scan
