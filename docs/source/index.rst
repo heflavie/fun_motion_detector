@@ -10,7 +10,7 @@ Welcome to Fun Motion Detector's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-modules
+   modules
 
 Indices and tables
 ==================
